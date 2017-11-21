@@ -19,6 +19,8 @@
 
 [image1]: ./misc_images/diagram.jpg
 [image2]: ./misc_images/inverse-kinematics.png
+[image3]: ./misc_images/theta3-2.png
+[image4]: ./misc_images/gazebo.png
 
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/972/view) Points
@@ -38,6 +40,19 @@ See below for the axis assignments:
 ![alt text][image1]
 
 Then the values were extracted from the kr210.urdf.xarco file.
+
+Following are DH parameters used specifically in this project, they are based on the file and forward kinematics demo.
+
+|ID   |![alpha][alpha_i-1] |![a][a] |![d][d] |![theta][theta]    |
+|:---:|:------------------:|:------:|:------:|:-----------------:| 
+|    1|                  0 |      0 |   0.75 |     ![q1][theta1] |
+|    2|      ![-pi2][-pi2] |   0.35 |      0 |  ![q2][theta2-90] |
+|    3|                  0 |   1.25 |      0 |     ![q3][theta3] |
+|    4|      ![-pi2][-pi2] | -0.054 |   1.50 |     ![q4][theta4] |
+|    5|        ![pi2][pi2] |      0 |      0 |     ![q5][theta5] |
+|    6|      ![-pi2][-pi2] |      0 |      0 |     ![q6][theta6] |
+|   EE|                  0 |      0 |  0.303 |                 0 |
+
 
 #### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
 
@@ -92,24 +107,68 @@ The above gives us the outcome of the end effector in the frame by using forward
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
-DH Parameter Table
-alpha0 | 0 | a0 | 0 | d0 | 0.75
-alpha1 | -pi/2 | a1 | 0.35 | d1 | 0
-alpha2 | 0 | a2 | 1.25 | d2 | 0
-alpha3 | -pi/2 | a3 | -0.054 | d3 | 1.50
-alpha4 | -pi/2 | a4 | 0 | d4 | 0
-alpha5 | -pi/2 | a5 | 0 | d5 | 0
-alpha6 | 0 | a6 | 0 | d6 | 0.303
+1. DH Parameter Table
+|ID   |![alpha][alpha_i-1] |![a][a] |![d][d] |![theta][theta]    |
+|:---:|:------------------:|:------:|:------:|:-----------------:| 
+|    1|                  0 |      0 |   0.75 |     ![q1][theta1] |
+|    2|      ![-pi2][-pi2] |   0.35 |      0 |  ![q2][theta2-90] |
+|    3|                  0 |   1.25 |      0 |     ![q3][theta3] |
+|    4|      ![-pi2][-pi2] | -0.054 |   1.50 |     ![q4][theta4] |
+|    5|        ![pi2][pi2] |      0 |      0 |     ![q5][theta5] |
+|    6|      ![-pi2][-pi2] |      0 |      0 |     ![q6][theta6] |
+|   EE|                  0 |      0 |  0.303 |                 0 |
 
-Determine the location of the WC relative to the base frame
+2. Determine the location of the WC relative to the base frame
+$$
+WC =
+  \left[
+   \begin{array}{r}
+     px  \\
+     py  \\
+     pz
+   \end{array}
+ \right] - dy \cdot r06
+ \left[
+  \begin{array}{r}
+    0  \\
+    0  \\
+    1
+  \end{array}
+\right]
 
-![alt text][image2]
+$$
+
+3. find theta1
+$$
+\theta1 = atan2(y_{wc} , x_{wc})
+$$
+
+4. find theta3
+
+image from slack channel
+![from slack chunnel][image3]
+
+$$
+\theta = arccos(\frac{b^2 + c^2 - a^2}{2 b c})
+$$
+
+5. find theta2
+
+$$
+\theta = atan2(y_c,xc) + atan2(\sqrt{1-cos^2(q_21), cos(q_21)})
+$$
+
+6. find theta4, theta5, theta6
+
+theta4, 5, 6 calculate with tf.transformations.euler_from_matrix
 
 ### Project Implementation
 
 #### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
 
 
-The code has been commented accordingly.
+The code has been commented accordingly. This was a challenging project. My codes started very inefficient when planning a path. By making modifications from the walkthrough I was able to obtain pretty efficient paths. I would like to implement some optimizations in the future to improve the speed of this project.
+
+![alt text][image4]
 
 
